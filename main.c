@@ -15,6 +15,7 @@
 #if defined(OPT)
 #include "file.c"
 #include "debug.h"
+#include "threadpool.h"
 #include <fcntl.h>
 
 #define ALIGN_FILE "align.txt"
@@ -22,6 +23,8 @@
 #ifndef THREAD_NUM
 #define THREAD_NUM 4
 #endif
+
+#define POOL_SIZE 8
 
 #endif
 
@@ -46,8 +49,6 @@ int main(int argc, char *argv[])
     FILE *fp;
     int i = 0;
     char line[MAX_LAST_NAME_SIZE];
-#else
-    struct timespec mid;
 #endif
     struct timespec start, end;
     double cpu_time1, cpu_time2;
@@ -89,18 +90,15 @@ int main(int argc, char *argv[])
 
     pthread_setconcurrency(THREAD_NUM + 1);
 
-    pthread_t *tid = (pthread_t *) malloc(sizeof(pthread_t) * THREAD_NUM);
     append_arg **app = (append_arg **) malloc(sizeof(append_arg *) * THREAD_NUM);
-    for (int i = 0; i < THREAD_NUM; i++)
+    
+    threadpool_t *pool = threadpool_create(THREAD_NUM, POOL_SIZE, 0);
+    for(int i = 0; i < THREAD_NUM; i++) {
         app[i] = new_append_arg(map + MAX_LAST_NAME_SIZE * i, map + fs, i,
                               THREAD_NUM, entry_pool + i);
-
-    clock_gettime(CLOCK_REALTIME, &mid);
-    for (int i = 0; i < THREAD_NUM; i++)
-        pthread_create( &tid[i], NULL, (void *) &append, (void *) app[i]);
-
-    for (int i = 0; i < THREAD_NUM; i++)
-        pthread_join(tid[i], NULL);
+        threadpool_add(pool, &append, (void *)app[i], 0);
+    }
+    threadpool_destroy(pool, 1);
 
     entry *etmp;
 
@@ -173,7 +171,7 @@ int main(int argc, char *argv[])
     free(pHead);
 #else
     free(entry_pool);
-    free(tid);
+    //free(tid);
     free(app);
     munmap(map, fs);
 #endif
