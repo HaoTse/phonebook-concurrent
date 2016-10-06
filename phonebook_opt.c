@@ -26,9 +26,9 @@ entry *findName(char lastname[], entry *pHead)
     return NULL;
 }
 
-append_argu *new_append_argu(char *ptr, char *eptr, int tid, int ntd, entry *start)
+append_arg *new_append_arg(char *ptr, char *eptr, int tid, int ntd, entry *start)
 {
-    append_argu *app = (append_argu *) malloc(sizeof(append_argu));
+    append_arg *app = (append_arg *) malloc(sizeof(append_arg));
 
     app->ptr = ptr;
     app->eptr = eptr;
@@ -46,7 +46,7 @@ void append(void *arg)
 
     clock_gettime(CLOCK_REALTIME, &start);
 
-    append_argu *app = (append_argu *) arg;
+    append_arg *app = (append_arg *) arg;
 
     int count = 0;
     entry *j = app->entryStart;
@@ -79,7 +79,7 @@ void show_entry(entry *pHead)
     }
 }
 
-#ifdef DEBUG
+#ifdef PROFILE
 static double diff_in_second(struct timespec t1, struct timespec t2)
 {
     struct timespec diff;

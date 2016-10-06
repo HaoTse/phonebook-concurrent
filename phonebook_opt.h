@@ -29,7 +29,7 @@ typedef struct __PHONE_BOOK_ENTRY {
 } entry;
 
 //arguments for `pthread_create`
-typedef struct _append_argu {
+typedef struct _append_arg {
     char *ptr;
     char *eptr;
     int tid;
@@ -37,10 +37,10 @@ typedef struct _append_argu {
     entry *entryStart;
     entry *pHead;
     entry *pLast;
-} append_argu;
+} append_arg;
 
 entry *findName(char lastname[], entry *pHead);
-append_argu *new_append_argu(char *ptr, char *eptr, int tid, int ntd, entry *start);
+append_arg *new_append_arg(char *ptr, char *eptr, int tid, int ntd, entry *start);
 void append(void *arg);
 void show_entry(entry *pHead);
 

@@ -8,7 +8,11 @@ CFLAGS_opt  += -D THREAD_NUM=${THREAD}
 endif
 
 ifeq ($(strip $(DEBUG)),1)
-CFLAGS_opt += -DDEBUG -g
+CFLAGS_opt += -DDEBUG
+endif
+
+ifeq ($(strip $(PROFILE)),1)
+CFLAGS_opt += -DPROFILE
 endif
 
 EXEC = phonebook_orig phonebook_opt

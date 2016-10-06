@@ -90,9 +90,9 @@ int main(int argc, char *argv[])
     pthread_setconcurrency(THREAD_NUM + 1);
 
     pthread_t *tid = (pthread_t *) malloc(sizeof(pthread_t) * THREAD_NUM);
-    append_argu **app = (append_argu **) malloc(sizeof(append_argu *) * THREAD_NUM);
+    append_arg **app = (append_arg **) malloc(sizeof(append_arg *) * THREAD_NUM);
     for (int i = 0; i < THREAD_NUM; i++)
-        app[i] = new_append_argu(map + MAX_LAST_NAME_SIZE * i, map + fs, i,
+        app[i] = new_append_arg(map + MAX_LAST_NAME_SIZE * i, map + fs, i,
                               THREAD_NUM, entry_pool + i);
 
     clock_gettime(CLOCK_REALTIME, &mid);
