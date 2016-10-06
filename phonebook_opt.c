@@ -26,10 +26,9 @@ entry *findName(char lastname[], entry *pHead)
     return NULL;
 }
 
-append_a *new_append_a(char *ptr, char *eptr, int tid, int ntd,
-                       entry *start)
+append_argu *new_append_argu(char *ptr, char *eptr, int tid, int ntd, entry *start)
 {
-    append_a *app = (append_a *) malloc(sizeof(append_a));
+    append_argu *app = (append_argu *) malloc(sizeof(append_argu));
 
     app->ptr = ptr;
     app->eptr = eptr;
@@ -44,17 +43,15 @@ append_a *new_append_a(char *ptr, char *eptr, int tid, int ntd,
 void append(void *arg)
 {
     struct timespec start, end;
-    double cpu_time;
 
     clock_gettime(CLOCK_REALTIME, &start);
 
-    append_a *app = (append_a *) arg;
+    append_argu *app = (append_argu *) arg;
 
     int count = 0;
     entry *j = app->entryStart;
-    for (char *i = app->ptr; i < app->eptr;
-            i += MAX_LAST_NAME_SIZE * app->nthread,
-            j += app->nthread,count++) {
+    char *i = app->ptr;
+    while(i < app->eptr) {
         app->pLast->pNext = j;
         app->pLast = app->pLast->pNext;
 
@@ -62,11 +59,14 @@ void append(void *arg)
         dprintf("thread %d append string = %s\n",
                 app->tid, app->pLast->lastName);
         app->pLast->pNext = NULL;
+
+        i += MAX_LAST_NAME_SIZE * app->nthread;
+        j += app->nthread;
+        count++;
     }
     clock_gettime(CLOCK_REALTIME, &end);
-    cpu_time = diff_in_second(start, end);
 
-    dprintf("thread take %lf sec, count %d\n", cpu_time, count);
+    dprintf("thread take %lf sec, count %d\n", diff_in_second(start, end), count);
 
     pthread_exit(NULL);
 }
@@ -79,6 +79,7 @@ void show_entry(entry *pHead)
     }
 }
 
+#ifdef DEBUG
 static double diff_in_second(struct timespec t1, struct timespec t2)
 {
     struct timespec diff;
@@ -91,3 +92,4 @@ static double diff_in_second(struct timespec t1, struct timespec t2)
     }
     return (diff.tv_sec + diff.tv_nsec / 1000000000.0);
 }
+#endif
